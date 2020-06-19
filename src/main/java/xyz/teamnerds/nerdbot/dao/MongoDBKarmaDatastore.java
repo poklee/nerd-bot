@@ -82,6 +82,7 @@ public class MongoDBKarmaDatastore implements KarmaDatastore
 							.append("karma", amount);
 
 					userKarmaCollection.insertOne(doc);
+					return amount;
 				}
 				else
 				{
@@ -91,9 +92,6 @@ public class MongoDBKarmaDatastore implements KarmaDatastore
 				}
 			}
 		}
-		
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 }
