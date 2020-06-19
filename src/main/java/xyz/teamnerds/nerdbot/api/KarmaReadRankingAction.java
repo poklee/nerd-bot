@@ -1,22 +1,32 @@
 package xyz.teamnerds.nerdbot.api;
 
+import javax.annotation.Nonnull;
+
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
 /**
- * Event when a user ask for his/her karma
+ * 
  * @author plee
-  */
+ *
+ */
 @Builder
 @Getter
 @ToString
 @EqualsAndHashCode
-public class KarmaReadAction implements NerdBotAction
+public class KarmaReadRankingAction implements NerdBotAction
 {
-
-	private String userId;
 	
+	/**
+	 * The channel id this action is being requested in
+	 */
+	@lombok.NonNull
+	@Nonnull
 	private String channelId;
+	
+	
+	
+
 }

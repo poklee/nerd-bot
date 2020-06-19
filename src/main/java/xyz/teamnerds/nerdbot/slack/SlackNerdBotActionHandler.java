@@ -2,6 +2,8 @@ package xyz.teamnerds.nerdbot.slack;
 
 import java.io.IOException;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 
 import xyz.teamnerds.nerdbot.api.HelpAction;
 import xyz.teamnerds.nerdbot.api.KarmaReadAction;
+import xyz.teamnerds.nerdbot.api.KarmaReadRankingAction;
 import xyz.teamnerds.nerdbot.api.KarmaUpdateAction;
 import xyz.teamnerds.nerdbot.api.NerdBotActionHandler;
 import xyz.teamnerds.nerdbot.dao.KarmaDatastore;
@@ -33,7 +36,14 @@ public class SlackNerdBotActionHandler implements NerdBotActionHandler
 		
 		String helpBlockJson = "[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Give kuddos to your teammates with karma points, they are like Bravo points, but with no actual value!  Use *@user++* or *@user--* after mentioning a user to give out points. \"}},{\"type\":\"divider\"},{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*Example Usage*\"}},{\"type\":\"context\",\"elements\":[{\"type\":\"mrkdwn\",\"text\":\"*POK*: Thanks @Andrea ++ for QAing our bad code\"}]},{\"type\":\"context\",\"elements\":[{\"type\":\"mrkdwn\",\"text\":\"*HOMERBOT*: @Andrea karma increase to 100\"}]},{\"type\":\"context\",\"elements\":[{\"type\":\"mrkdwn\",\"text\":\"*POK*: Stop breaking the buid @Sony --\"}]},{\"type\":\"context\",\"elements\":[{\"type\":\"mrkdwn\",\"text\":\"*HOMERBOT*: @Sony karma decrease to -1\"}]},{\"type\":\"divider\"},{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*More Plus/Minus equals More Good/Bad!*\"}},{\"type\":\"context\",\"elements\":[{\"type\":\"mrkdwn\",\"text\":\"*YOU*: Thanks @Pok++++++++++++++ for building this bot\"}]},{\"type\":\"context\",\"elements\":[{\"type\":\"mrkdwn\",\"text\":\"*HOMERBOT*: @Pok your karma increase to over 9000\"}]}]";
 		sendMessageWithJson(action.getChannelId(), helpBlockJson);
-		
+	}
+	
+	@Override
+	public void handleKarmaReadRankingAction(KarmaReadRankingAction action)
+	{
+		LOGGER.info("handleKarmaReadRankingAction " + action);
+		@Nonnull String channelId = action.getChannelId();
+		sendMessage(channelId, "TODO");
 	}
 
 	@Override
@@ -57,6 +67,7 @@ public class SlackNerdBotActionHandler implements NerdBotActionHandler
 		
 		int karmaIntValue = karma == null ? 0 : karma.intValue();
 		String message = String.format("<@%1$s> your karma is %2$d", userId, karmaIntValue);
+		Preconditions.checkNotNull(message);
 		sendMessage(channelId, message);
 	}
 
@@ -84,12 +95,13 @@ public class SlackNerdBotActionHandler implements NerdBotActionHandler
 		{
 			String increaseOrDecrease = karma > 0 ? "increased" : "decreased";
 			String message = String.format("<@%1$s> your karma %2$s to %3$d", userId, increaseOrDecrease, newAmount);
+			Preconditions.checkNotNull(message);
 			sendMessage(channelId, message);
 		}
 	}
 
 	
-	private void sendMessage(String channel, String text)
+	private void sendMessage(@Nonnull String channel, @Nonnull String text)
 	{
 		Slack slack = Slack.getInstance();
 		String token = new SlackConfiguration().getToken();

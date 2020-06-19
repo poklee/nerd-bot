@@ -28,9 +28,21 @@ import com.slack.api.util.json.GsonFactory;
 
 import xyz.teamnerds.nerdbot.api.HelpAction;
 import xyz.teamnerds.nerdbot.api.KarmaReadAction;
+import xyz.teamnerds.nerdbot.api.KarmaReadRankingAction;
 import xyz.teamnerds.nerdbot.api.KarmaUpdateAction;
+import xyz.teamnerds.nerdbot.api.NerdBotAction;
 import xyz.teamnerds.nerdbot.api.NerdBotActionHandler;
 
+
+/**
+ * Handles slack event payload json. This class is responsible for parsing out
+ * slack message formats and converthing them into logical {@link NerdBotAction}
+ * events. Then every {@link NerdBotAction} event gets handled by the system
+ * {@link NerdBotActionHandler}
+ * 
+ * @author plee
+ *
+ */
 @Service
 public class SlackWebhookEventHandlerImpl implements SlackWebhookEventHandler
 {
@@ -100,7 +112,16 @@ public class SlackWebhookEventHandlerImpl implements SlackWebhookEventHandler
 		String channel = messageEvent.getChannel();
 		if (text != null && user != null && channel != null)
 		{
-			if (text.toLowerCase().contains("karma"))
+			String textLowerCase = text.toLowerCase();
+			if (textLowerCase.contains("ranking") || textLowerCase.contains("leaderboard"))
+			{
+				KarmaReadRankingAction action = KarmaReadRankingAction.builder()
+						.channelId(channel)
+						.build();
+				
+				nerdBotActionHandler.handleKarmaReadRankingAction(action);
+			}
+			else if (text.toLowerCase().contains("karma"))
 			{
 				KarmaReadAction action = KarmaReadAction.builder()
 						.userId(user)

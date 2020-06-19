@@ -1,6 +1,9 @@
 package xyz.teamnerds.nerdbot.dao;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -15,6 +18,10 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+
+/**
+ * Implementation that uses MongoDB to store the data
+ */
 @Service
 public class MongoDBKarmaDatastore implements KarmaDatastore
 {
@@ -67,6 +74,13 @@ public class MongoDBKarmaDatastore implements KarmaDatastore
 		}
 	}
 
+	@Nonnull
+	@Override
+	public List<UserKarma> getUserKarmaRankings() throws IOException
+	{
+		// TODO: Query mongo
+		return Collections.emptyList();
+	}
 
 	@Override
 	public int incrementKarmaForUser(@Nonnull String userId, int amount) throws IOException

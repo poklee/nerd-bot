@@ -14,14 +14,12 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class KarmaUpdateAction
+public class KarmaUpdateAction implements NerdBotAction
 {
 	private String userId;
 	
 	private String channelId;
 	
 	private int karmaAmount;
-	
-	
 
 }

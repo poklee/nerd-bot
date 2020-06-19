@@ -14,7 +14,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class HelpAction
+public class HelpAction implements NerdBotAction
 {
 	private String userId;
 	

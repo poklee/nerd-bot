@@ -20,6 +20,9 @@ import org.springframework.web.server.ResponseStatusException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * The Slack API endpoint slack hits to send events to our system.
+ */
 @RestController
 public class SlackWebhookController {
 

@@ -9,6 +9,7 @@ public interface NerdBotActionHandler
 	
 	public void handleKarmaUpdateAction(KarmaUpdateAction action);
 	
+	public void handleKarmaReadRankingAction(KarmaReadRankingAction action);
 	
 
 }
