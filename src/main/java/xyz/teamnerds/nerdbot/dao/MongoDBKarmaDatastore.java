@@ -57,7 +57,7 @@ public class MongoDBKarmaDatastore implements KarmaDatastore
 		MongoClientURI uri = getMongoClientUri();
 		try (MongoClient mongoClient = new MongoClient(uri))
 		{
-			MongoDatabase database = mongoClient.getDatabase("nerdbot");
+			MongoDatabase database = mongoClient.getDatabase(mongoDbDatabase);
 			MongoCollection<Document> userKarmaCollection = database.getCollection("UserKarma");
 			
 			BasicDBObject dbObject = new BasicDBObject("_id", userId);
@@ -92,7 +92,7 @@ public class MongoDBKarmaDatastore implements KarmaDatastore
 		{
 			try (MongoClient mongoClient = new MongoClient(uri))
 			{
-				MongoDatabase database = mongoClient.getDatabase("nerdbot");
+				MongoDatabase database = mongoClient.getDatabase(mongoDbDatabase);
 				MongoCollection<Document> userKarmaCollection = database.getCollection("UserKarma");
 				
 				BasicDBObject dbObject = new BasicDBObject("_id", userId);
