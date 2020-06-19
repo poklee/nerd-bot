@@ -21,6 +21,8 @@ public class MongoDBKarmaDatastore implements KarmaDatastore
 
 	private String mongoDbUser = System.getenv("MONGODB_USER");
 	private String mongoDbPassword = System.getenv("MONGODB_PASSWORD");
+	private String mongoDbDatabase = System.getenv("MONGODB_DATABASE");
+	private String mongoDbHost = System.getenv("MONGODB_HOST");
 
 	
 	@Nonnull
@@ -31,7 +33,13 @@ public class MongoDBKarmaDatastore implements KarmaDatastore
 			throw new IOException("Could not find mongodb user/password");
 		}
 		
-		MongoClientURI uri = new MongoClientURI("mongodb+srv://" +mongoDbUser+ ":" +mongoDbPassword+ "@cluster0-k5m7w.gcp.mongodb.net/nerdbot?retryWrites=true&w=majority");
+		String connectionString = String.format("mongodb+srv://%s:%s@%s/%s?retryWrites=true&w=majority", 
+				mongoDbUser,
+				mongoDbPassword,
+				mongoDbHost,
+				mongoDbDatabase);
+		
+		MongoClientURI uri = new MongoClientURI(connectionString);
 		return uri;
 	}
 	
