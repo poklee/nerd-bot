@@ -14,7 +14,7 @@ services:
     expose:
       - 10030
     networks:
-      - chipadvisor-network
+      - homerbot-network
     tty: true
     environment:
       SLACK_BOT_SIGNING_SECRET: ${TIVO_SLACK_BOT_SIGNING_SECRET}
