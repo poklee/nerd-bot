@@ -38,10 +38,7 @@
 	</target>
 
 	<target name="stop">
-		<exec command="docker-compose" failonerror="true">
-			<arg value="--no-ansi" />
-			<arg value="down" />
-		</exec>
+		<antcall target="docker-compose-down" />
 	</target>
 
 	<target name="docker-compose-build">
