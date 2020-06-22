@@ -1,0 +1,69 @@
+<project name="Nerdbot for Tivo" default="about">
+
+	<property environment="env" />
+
+	<target name="about">
+		<echo>About ${ant.project.name}</echo>
+		<echo>Base Dir: ${basedir}</echo>
+		<echo>-----------------------------------------------</echo>
+		<exec executable="docker-compose">
+			<arg value="--version" />
+		</exec>
+
+		<echo>-----------------------------------------------</echo>
+		<exec executable="docker">
+			<arg value="--version" />
+		</exec>
+	</target>
+
+	<target name="check-dependency">
+		<echo>Making sure you have ENV variables set</echo>
+		<fail unless="env.TIVO_SLACK_BOT_SIGNING_SECRET" />
+		<fail unless="env.TIVO_SLACK_BOT_CLIENT_ID" />
+		<fail unless="env.TIVO_SLACK_BOT_TOKEN" />
+		<fail unless="env.TIVO_MONGODB_USER" />
+		<fail unless="env.TIVO_MONGODB_PASSWORD" />
+		<fail unless="env.TIVO_MONGODB_HOST" />
+		<fail unless="env.TIVO_MONGODB_DATABASE" />
+	</target>
+
+	<target name="start">
+		<echo>Starting ${ant.project.name}</echo>
+		<antcall target="docker-compose-build" />
+		<antcall target="docker-compose-up" />
+		<echo>Docker PS log</echo>
+		<exec executable="docker">
+			<arg value="ps" />
+		</exec>
+	</target>
+
+	<target name="stop">
+		<exec command="docker-compose" failonerror="true">
+			<arg value="--no-ansi" />
+			<arg value="down" />
+		</exec>
+	</target>
+
+	<target name="docker-compose-build">
+		<exec executable="docker-compose" failonerror="true">
+			<arg value="--no-ansi" />
+			<arg value="build" />
+		</exec>
+	</target>
+
+	<target name="docker-compose-up">
+		<!-- Docker compose up -->
+		<exec executable="docker-compose" failonerror="true">
+			<arg value="--no-ansi" />
+			<arg value="up" />
+			<arg value="-d" />
+		</exec>
+	</target>
+
+	<target name="docker-compose-down" failonerror="true">
+		<!-- Docker compose down -->
+		<exec executable="docker">
+			<arg value="ps" />
+		</exec>
+	</target>
+</project>
