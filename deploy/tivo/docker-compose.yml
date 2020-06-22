@@ -1,0 +1,26 @@
+# https://docs.docker.com/compose/compose-file
+version: '3.1'
+networks:
+  homerbot-network:
+    driver: bridge
+
+services:
+  backend:
+    build:
+      context: ../../
+      dockerfile: dockerfile-spring
+    ports:
+      - 10030:8080
+    expose:
+      - 10030
+    networks:
+      - chipadvisor-network
+    tty: true
+    environment:
+      SLACK_BOT_SIGNING_SECRET: ${TIVO_SLACK_BOT_SIGNING_SECRET}
+      SLACK_BOT_CLIENT_ID: ${TIVO_SLACK_BOT_CLIENT_ID}
+      SLACK_BOT_TOKEN: ${TIVO_SLACK_BOT_TOKEN}
+      MONGODB_USER: ${TIVO_MONGODB_USER}
+      MONGODB_PASSWORD: ${TIVO_MONGODB_PASSWORD}
+      MONGODB_HOST: ${TIVO_MONGODB_HOST}
+      MONGODB_DATABASE: ${TIVO_MONGODB_DATABASE}

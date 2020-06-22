@@ -1,0 +1,26 @@
+# https://docs.docker.com/compose/compose-file
+version: '3.1'
+networks:
+  chipadvisor-network:
+    driver: bridge
+
+services:
+  backend:
+    build:
+      context: ../../
+      dockerfile: dockerfile-spring
+    ports:
+      - 10031:8080
+    expose:
+      - 10031
+    networks:
+      - chipadvisor-network
+    tty: true
+    environment:
+      SLACK_BOT_SIGNING_SECRET: ${CHIPADVISOR_SLACK_BOT_SIGNING_SECRET}
+      SLACK_BOT_CLIENT_ID: ${CHIPADVISOR_SLACK_BOT_CLIENT_ID}
+      SLACK_BOT_TOKEN: ${CHIPADVISOR_SLACK_BOT_TOKEN}
+      MONGODB_USER: ${CHIPADVISOR_MONGODB_USER}
+      MONGODB_PASSWORD: ${CHIPADVISOR_MONGODB_PASSWORD}
+      MONGODB_HOST: ${CHIPADVISOR_MONGODB_HOST}
+      MONGODB_DATABASE: ${CHIPADVISOR_MONGODB_DATABASE}
