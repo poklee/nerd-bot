@@ -33,7 +33,6 @@ import xyz.teamnerds.nerdbot.api.KarmaUpdateAction;
 import xyz.teamnerds.nerdbot.api.NerdBotAction;
 import xyz.teamnerds.nerdbot.api.NerdBotActionHandler;
 
-
 /**
  * Handles slack event payload json. This class is responsible for parsing out
  * slack message formats and converthing them into logical {@link NerdBotAction}
@@ -47,213 +46,201 @@ import xyz.teamnerds.nerdbot.api.NerdBotActionHandler;
 public class SlackWebhookEventHandlerImpl implements SlackWebhookEventHandler
 {
 
-	private Logger LOGGER = LoggerFactory.getLogger(SlackWebhookEventHandlerImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(SlackWebhookEventHandlerImpl.class);
 
-	@Autowired
-	private NerdBotActionHandler nerdBotActionHandler;
+    @Autowired
+    private NerdBotActionHandler nerdBotActionHandler;
 
-	@Autowired
-	private TaskExecutor taskExecutor;
+    @Autowired
+    private TaskExecutor taskExecutor;
 
-	@Override
-	public void handlePayload(String contentBody)
-	{
-		if (taskExecutor == null)
-		{
-			LOGGER.error("Failed to auto wire TaskExecutor");
-			return;
-		}
-		
-		taskExecutor.execute(() -> {
-			routeEvents(contentBody);
-		});
-	}
-	
-	private void routeEvents(String contentBody)
-	{
-		LOGGER.info("Routing events in thread " + Thread.currentThread().getName());
-		
-		EventTypeExtractor eventTypeExtractor = new EventTypeExtractorImpl();
-		String eventType = eventTypeExtractor.extractEventType(contentBody);
-		
-		if (MessageEvent.TYPE_NAME.equals(eventType))
-		{
-			Gson gson = GsonFactory.createSnakeCase();
-			MessagePayload payload = gson.fromJson(contentBody, MessagePayload.class);
-			if (payload != null)
-			{
-				handleMessagePayload(payload);
-			}
-		}
-		else if (AppMentionEvent.TYPE_NAME.equals(eventType))
-		{
-			// Handle app mentions here
-			Gson gson = GsonFactory.createSnakeCase();
-			AppMentionPayload payload = gson.fromJson(contentBody, AppMentionPayload.class);
-			if (payload != null)
-			{
-				handleAppMentionPayload(payload);
-			}
-		}
-	}
-	
-	private void handleAppMentionPayload(@Nonnull AppMentionPayload payload)
-	{
-		AppMentionEvent messageEvent = payload.getEvent();
-		if (messageEvent == null)
-		{
-			return;
-		}
-		
-		
-		LOGGER.info("handleAppMentionPayload text=" + messageEvent.getText());
-		String text = messageEvent.getText();
-		String user = messageEvent.getUser();
-		String channel = messageEvent.getChannel();
-		if (text != null && user != null && channel != null)
-		{
-			String textLowerCase = text.toLowerCase();
-			if (textLowerCase.contains("ranking") || textLowerCase.contains("leaderboard"))
-			{
-				KarmaReadRankingAction action = KarmaReadRankingAction.builder()
-						.channelId(channel)
-						.build();
-				
-				nerdBotActionHandler.handleKarmaReadRankingAction(action);
-			}
-			else if (text.toLowerCase().contains("karma"))
-			{
-				KarmaReadAction action = KarmaReadAction.builder()
-						.userId(user)
-						.channelId(channel)
-						.build();
-				
-				nerdBotActionHandler.handleKarmaReadAction(action);
-			}
-			else if (text.toLowerCase().contains("help"))
-			{
-				HelpAction action = HelpAction.builder()
-						.userId(user)
-						.channelId(channel)
-						.build();
-				
-				nerdBotActionHandler.handleHelpAction(action);
-			}
-		}
-	}
+    @Override
+    public void handlePayload(String contentBody)
+    {
+        if (taskExecutor == null)
+        {
+            LOGGER.error("Failed to auto wire TaskExecutor");
+            return;
+        }
 
-	public void handleMessagePayload(@Nonnull MessagePayload payload)
-	{
-		MessageEvent messageEvent = payload.getEvent();
-		if (messageEvent == null || messageEvent.getBlocks() == null)
-		{
-			return;
-		}
-		
-		LOGGER.info("handleMessagePayload text=" + messageEvent.getText());
-		Map<String, Integer> userKarmaMap = new HashMap<>();
+        taskExecutor.execute(() ->
+        {
+            routeEvents(contentBody);
+        });
+    }
 
-		// Parse message to build the user karma map
-		for (LayoutBlock layoutBlock : messageEvent.getBlocks())
-		{
-			if (layoutBlock instanceof RichTextBlock)
-			{
-				RichTextBlock richTextBlock = (RichTextBlock) layoutBlock;
-				for (BlockElement blockElement : richTextBlock.getElements())
-				{
-					if (blockElement instanceof RichTextSectionElement)
-					{
-						RichTextSectionElement richTextSectionElement = (RichTextSectionElement) blockElement;
-						Stack<RichTextElement> stack = new Stack<>();
-						for (RichTextElement richTextElement : richTextSectionElement.getElements())
-						{
-							if (richTextElement instanceof RichTextSectionElement.User)
-							{
-								// Nothing special needed
-							}
-							else if (richTextElement instanceof RichTextSectionElement.Text)
-							{
-								// See if there is karma points
-								RichTextSectionElement.Text richTextSectionElementText = (RichTextSectionElement.Text) richTextElement;
-								int karmaPoints = countKarmaPoints(richTextSectionElementText.getText());
-								if (karmaPoints != 0 && stack.isEmpty() == false)
-								{
-									RichTextElement lastElement = stack.peek();
-									if (lastElement instanceof RichTextSectionElement.User)
-									{
-										RichTextSectionElement.User user = (RichTextSectionElement.User) lastElement;
-										String userId = user.getUserId();
-										userKarmaMap.put(userId, karmaPoints);
-									}
-								}
-							}
-							stack.push(richTextElement);
-						}
-					}
-				}
-			}
-		}
+    private void routeEvents(String contentBody)
+    {
+        LOGGER.info("Routing events in thread " + Thread.currentThread().getName());
 
-		for (Map.Entry<String, Integer> entry : userKarmaMap.entrySet())
-		{
-			String userId = entry.getKey();
-			Integer karma = entry.getValue();
-			if (userId != null)
-			{
-				KarmaUpdateAction action = KarmaUpdateAction.builder()
-						.userId(userId)
-						.channelId(messageEvent.getChannel())
-						.karmaAmount(karma)
-						.build();
-				
-				nerdBotActionHandler.handleKarmaUpdateAction(action);
-			}
-		}
-	}
+        EventTypeExtractor eventTypeExtractor = new EventTypeExtractorImpl();
+        String eventType = eventTypeExtractor.extractEventType(contentBody);
 
-	private int countKarmaPoints(String text)
-	{
-		if (text == null)
-		{
-			return 0;
-		}
+        if (MessageEvent.TYPE_NAME.equals(eventType))
+        {
+            Gson gson = GsonFactory.createSnakeCase();
+            MessagePayload payload = gson.fromJson(contentBody, MessagePayload.class);
+            if (payload != null)
+            {
+                handleMessagePayload(payload);
+            }
+        }
+        else if (AppMentionEvent.TYPE_NAME.equals(eventType))
+        {
+            // Handle app mentions here
+            Gson gson = GsonFactory.createSnakeCase();
+            AppMentionPayload payload = gson.fromJson(contentBody, AppMentionPayload.class);
+            if (payload != null)
+            {
+                handleAppMentionPayload(payload);
+            }
+        }
+    }
 
-		int count = 0;
-		for (int i = 0; i < text.length(); i++)
-		{
-			char ch = text.charAt(i);
-			if (Character.isWhitespace(ch))
-			{
-				// ignore
-			}
-			else if (ch == '+')
-			{
-				count++;
-			}
-			else if (ch == '-')
-			{
-				count--;
-			}
-			else
-			{
-				// no more plus or minus
-				break;
-			}
-		}
+    private void handleAppMentionPayload(@Nonnull AppMentionPayload payload)
+    {
+        AppMentionEvent messageEvent = payload.getEvent();
+        if (messageEvent == null)
+        {
+            return;
+        }
 
-		if (count >= 2)
-		{
-			return count - 1;
-		}
-		else if (count <= -2)
-		{
-			return count + 1;
-		}
-		else
-		{
-			return 0;
-		}
-	}
+        LOGGER.info("handleAppMentionPayload text=" + messageEvent.getText());
+        String text = messageEvent.getText();
+        String user = messageEvent.getUser();
+        String channel = messageEvent.getChannel();
+        if (text != null && user != null && channel != null)
+        {
+            String textLowerCase = text.toLowerCase();
+            if (textLowerCase.contains("ranking") || textLowerCase.contains("leaderboard"))
+            {
+                KarmaReadRankingAction action = KarmaReadRankingAction.builder().channelId(channel).build();
 
+                nerdBotActionHandler.handleKarmaReadRankingAction(action);
+            }
+            else if (text.toLowerCase().contains("karma"))
+            {
+                KarmaReadAction action = KarmaReadAction.builder().userId(user).channelId(channel).build();
+
+                nerdBotActionHandler.handleKarmaReadAction(action);
+            }
+            else if (text.toLowerCase().contains("help"))
+            {
+                HelpAction action = HelpAction.builder().userId(user).channelId(channel).build();
+
+                nerdBotActionHandler.handleHelpAction(action);
+            }
+        }
+    }
+
+    public void handleMessagePayload(@Nonnull MessagePayload payload)
+    {
+        MessageEvent messageEvent = payload.getEvent();
+        if (messageEvent == null || messageEvent.getBlocks() == null)
+        {
+            return;
+        }
+
+        LOGGER.info("handleMessagePayload text=" + messageEvent.getText());
+        Map<String, Integer> userKarmaMap = new HashMap<>();
+
+        // Parse message to build the user karma map
+        for (LayoutBlock layoutBlock : messageEvent.getBlocks())
+        {
+            if (layoutBlock instanceof RichTextBlock)
+            {
+                RichTextBlock richTextBlock = (RichTextBlock) layoutBlock;
+                for (BlockElement blockElement : richTextBlock.getElements())
+                {
+                    if (blockElement instanceof RichTextSectionElement)
+                    {
+                        RichTextSectionElement richTextSectionElement = (RichTextSectionElement) blockElement;
+                        Stack<RichTextElement> stack = new Stack<>();
+                        for (RichTextElement richTextElement : richTextSectionElement.getElements())
+                        {
+                            if (richTextElement instanceof RichTextSectionElement.User)
+                            {
+                                // Nothing special needed
+                            }
+                            else if (richTextElement instanceof RichTextSectionElement.Text)
+                            {
+                                // See if there is karma points
+                                RichTextSectionElement.Text richTextSectionElementText = (RichTextSectionElement.Text) richTextElement;
+                                int karmaPoints = countKarmaPoints(richTextSectionElementText.getText());
+                                if (karmaPoints != 0 && stack.isEmpty() == false)
+                                {
+                                    RichTextElement lastElement = stack.peek();
+                                    if (lastElement instanceof RichTextSectionElement.User)
+                                    {
+                                        RichTextSectionElement.User user = (RichTextSectionElement.User) lastElement;
+                                        String userId = user.getUserId();
+                                        userKarmaMap.put(userId, karmaPoints);
+                                    }
+                                }
+                            }
+                            stack.push(richTextElement);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (Map.Entry<String, Integer> entry : userKarmaMap.entrySet())
+        {
+            String userId = entry.getKey();
+            Integer karma = entry.getValue();
+            if (userId != null)
+            {
+                KarmaUpdateAction action = KarmaUpdateAction.builder().userId(userId)
+                        .channelId(messageEvent.getChannel()).karmaAmount(karma).build();
+
+                nerdBotActionHandler.handleKarmaUpdateAction(action);
+            }
+        }
+    }
+
+    private int countKarmaPoints(String text)
+    {
+        if (text == null)
+        {
+            return 0;
+        }
+
+        int count = 0;
+        for (int i = 0; i < text.length(); i++)
+        {
+            char ch = text.charAt(i);
+            if (Character.isWhitespace(ch))
+            {
+                // ignore
+            }
+            else if (ch == '+')
+            {
+                count++;
+            }
+            else if (ch == '-')
+            {
+                count--;
+            }
+            else
+            {
+                // no more plus or minus
+                break;
+            }
+        }
+
+        if (count >= 2)
+        {
+            return count - 1;
+        }
+        else if (count <= -2)
+        {
+            return count + 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
 
 }
