@@ -11,17 +11,17 @@ import javax.annotation.Nonnull;
  */
 public interface KarmaDatastore
 {
-	@CheckForNull
-	public Integer getKarmaForUser(@Nonnull String userId) throws IOException;
-	
-	public int incrementKarmaForUser(@Nonnull String userId, int amount) throws IOException;
+    @CheckForNull
+    public Integer getKarmaForUser(@Nonnull String userId) throws IOException;
 
-	/**
-	 * Get the top karma rankings
-	 *
-	 * @return a sorted list of top karma users
-	 * @throws IOException if datastore cannot read the info
-	 */
-	@Nonnull
-	public List<UserKarma> getUserKarmaRankings() throws IOException;
+    public int incrementKarmaForUser(@Nonnull String userId, int amount) throws IOException;
+
+    /**
+     * Get the top karma rankings
+     *
+     * @return a sorted list of top karma users
+     * @throws IOException if datastore cannot read the info
+     */
+    @Nonnull
+    public List<UserKarma> getUserKarmaRankings() throws IOException;
 }

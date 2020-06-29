@@ -18,15 +18,12 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class KarmaReadRankingAction implements NerdBotAction
 {
-	
-	/**
-	 * The channel id this action is being requested in
-	 */
-	@lombok.NonNull
-	@Nonnull
-	private String channelId;
-	
-	
-	
+
+    /**
+     * The channel id this action is being requested in
+     */
+    @lombok.NonNull
+    @Nonnull
+    private String channelId;
 
 }

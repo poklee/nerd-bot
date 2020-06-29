@@ -7,8 +7,9 @@ import lombok.ToString;
 
 /**
  * Event when a user ask for his/her karma
+ * 
  * @author plee
-  */
+ */
 @Builder
 @Getter
 @ToString
@@ -16,7 +17,7 @@ import lombok.ToString;
 public class KarmaReadAction implements NerdBotAction
 {
 
-	private String userId;
-	
-	private String channelId;
+    private String userId;
+
+    private String channelId;
 }

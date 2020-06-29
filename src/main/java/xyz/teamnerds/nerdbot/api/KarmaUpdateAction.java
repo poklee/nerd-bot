@@ -7,6 +7,7 @@ import lombok.ToString;
 
 /**
  * Event when karma change occurs
+ * 
  * @author plee
  *
  */
@@ -16,10 +17,10 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class KarmaUpdateAction implements NerdBotAction
 {
-	private String userId;
-	
-	private String channelId;
-	
-	private int karmaAmount;
+    private String userId;
+
+    private String channelId;
+
+    private int karmaAmount;
 
 }
