@@ -1,11 +1,11 @@
 package xyz.teamnerds.nerdbot.dao;
 
+import javax.annotation.Nonnull;
+
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-
-import javax.annotation.Nonnull;
 
 @Getter
 @Builder
