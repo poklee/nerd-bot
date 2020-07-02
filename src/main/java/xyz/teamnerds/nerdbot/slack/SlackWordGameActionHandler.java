@@ -219,7 +219,6 @@ public class SlackWordGameActionHandler implements WordGameActionHandler
     private void sendMessage(@Nonnull String channelId, @Nonnull String text)
     {
         Slack slack = Slack.getInstance();
-        if (1==1)return;
         String token = new SlackConfiguration().getToken();
         try
         {

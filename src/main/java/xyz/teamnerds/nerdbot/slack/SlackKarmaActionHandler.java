@@ -123,7 +123,6 @@ public class SlackKarmaActionHandler implements KarmaActionHandler
 
     private void sendMessageWithJson(String channel, String json)
     {
-        if (1==1)return;
         Slack slack = Slack.getInstance();
         String token = new SlackConfiguration().getToken();
         try
