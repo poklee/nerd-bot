@@ -122,7 +122,7 @@ public class SlackWordGameEventHandler implements SlackWebhookEventHandler
             return;
         }
         
-        Collection<String> allWords = parseWordsFromLayoutBlocks(blocks);
+        Collection<String> allWords = SlackWebhookEventHandler.parseWordsFromLayoutBlocks(blocks);
         if (allWords != null && !allWords.isEmpty())
         {
             List<String> uniqueWords = allWords.stream().distinct().collect(Collectors.toList());
@@ -156,7 +156,7 @@ public class SlackWordGameEventHandler implements SlackWebhookEventHandler
         }
         
         String text = appMentionEvent.getText();
-        Set<String> words = parseWordsFromText(text).stream()
+        Set<String> words = SlackWebhookEventHandler.parseWordsFromText(text).stream()
                 .map(str -> str.toLowerCase())
                 .collect(Collectors.toSet());
         
@@ -182,57 +182,6 @@ public class SlackWordGameEventHandler implements SlackWebhookEventHandler
         
     }
     
-    @Nonnull
-    private List<String> parseWordsFromLayoutBlocks(@Nonnull List<LayoutBlock> layoutBlocks)
-    {
-        // Parse message to build the user karma map
-        List<String> results = new ArrayList<>();
-        for (LayoutBlock layoutBlock : layoutBlocks)
-        {
-            if (layoutBlock instanceof RichTextBlock)
-            {
-                RichTextBlock richTextBlock = (RichTextBlock) layoutBlock;
-                for (BlockElement blockElement : richTextBlock.getElements())
-                {
-                    if (blockElement instanceof RichTextSectionElement)
-                    {
-                        RichTextSectionElement richTextSectionElement = (RichTextSectionElement) blockElement;
-                        for (RichTextElement richTextElement : richTextSectionElement.getElements())
-                        {
-                            if (richTextElement instanceof RichTextSectionElement.Text)
-                            {
-                                RichTextSectionElement.Text richTextSectionElementText = (RichTextSectionElement.Text) richTextElement;
-                                String text = richTextSectionElementText.getText();
-                                results.addAll(parseWordsFromText(text));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        return results;
-    }
     
-    @Nonnull
-    private List<String> parseWordsFromText(@CheckForNull String text)
-    {
-        if (text == null)
-        {
-            return Collections.emptyList();
-        }
-        
-        List<String> results = new ArrayList<>();
-        String[] parts = text.split("\\W");
-        for (String part : parts)
-        {
-            part = part.trim();
-            if (part.length() > 0)
-            {
-                results.add(part);
-            }
-        }
-        return results;
-    }
 
 }

@@ -13,6 +13,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Comparators;
@@ -41,6 +42,9 @@ public class SlackWordGameActionHandler implements WordGameActionHandler
     
     private static final Logger LOGGER = LoggerFactory.getLogger(SlackWordGameActionHandler.class);
 
+    @Autowired
+    private WordGameServiceFactory wordGameServiceFactory;
+    
     @Override
     public void handleHelpAction(@Nonnull WordGameHelpAction action)
     {
@@ -51,7 +55,11 @@ public class SlackWordGameActionHandler implements WordGameActionHandler
             return;
         }
         
-        GameApi gameApi = WordGameServiceFactory.createService();
+        GameApi gameApi = wordGameServiceFactory.createService();
+        if (gameApi == null)
+        {
+            return;
+        }
         try
         {
             GameInfo currentGame = gameApi.getDailyGameInfo();
@@ -74,7 +82,11 @@ public class SlackWordGameActionHandler implements WordGameActionHandler
     public void handleSubmitAnswerAction(@Nonnull WordGameSubmitAnswerAction action)
     {
         LOGGER.info(getClass().getSimpleName() + " handleSubmitAnswerAction " + action);
-        GameApi gameApi = WordGameServiceFactory.createService();
+        GameApi gameApi = wordGameServiceFactory.createService();
+        if (gameApi == null)
+        {
+            return;
+        }
         try
         {
             GameInfo currentGame = gameApi.getDailyGameInfo();
@@ -114,12 +126,16 @@ public class SlackWordGameActionHandler implements WordGameActionHandler
     public void handleShowLeaderboardsAction(@Nonnull WordGameShowLeaderboardsAction action)
     {
         LOGGER.info(getClass().getSimpleName() + " handleShowLeaderboardsAction " + action);
+        GameApi gameApi = wordGameServiceFactory.createService();
+        if (gameApi == null)
+        {
+            return;
+        }
         
         List<GameAnswerRecord> gameAnswerRecords = null;
         String gameId = null;
         try
         {
-            GameApi gameApi = WordGameServiceFactory.createService();
             GameInfo currentGame = gameApi.getDailyGameInfo();
             gameId = currentGame.getId();
             GameScoreInfo gameScoreInfo = gameApi.getLeaderboardInfo(currentGame.getId());
@@ -197,7 +213,7 @@ public class SlackWordGameActionHandler implements WordGameActionHandler
             sb.append("\n");
         }
         
-        LOGGER.info("Got message " + sb);
+        sendMessage(action.getChannelId(), sb.toString());
     }
     
     @Builder
@@ -212,7 +228,7 @@ public class SlackWordGameActionHandler implements WordGameActionHandler
     
     private void sendHelpMessage(@Nonnull String channelId, @Nonnull String currentGameLetters)
     {
-        String json = String.format("{\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Today the hidden words are composed of these characters: *%s*\"}},{\"type\":\"divider\"},{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*How to Play*: Anytime you say one of the hidden word of the days, you get points!  The more you chat, the more points you can possibly earn.  The hidden words of day are made up of the same characters. For example if the characters are *N,I,S,R,E,U,G,Y*, the hidden words will be all words that uses those combo of characters.  Example words are: guy, sir, sing, singer, etc.  \"}},{\"type\":\"context\",\"elements\":[{\"type\":\"mrkdwn\",\"text\":\"*Detail Explaination:*\"},{\"type\":\"mrkdwn\",\"text\":\"* Each character can only be used once unless there are multiple characters in the list.\\n* The longer words are worth more points\\n* A valid word is at least 3 characters long\"}]},{\"type\":\"divider\"},{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*Other Commands*\\n@homerbot game help\\n@homerbot game score - shows score for today's game\\n@homerbot game leaderboards - show the all time leaders in points\"}}]}", currentGameLetters);
+        String json = String.format("{\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"Today the hidden words are composed of these characters: *%s*\"}},{\"type\":\"divider\"},{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*How to Play*: Anytime you say one of the hidden word of the days, you get points!  The more you chat, the more points you can possibly earn.  The hidden words of day are made up of the same characters. For example if the characters are *N,I,S,R,E,U,G,Y*, the hidden words will be all words that uses those combo of characters.  Example words are: guy, sir, sing, singer, etc.  \"}},{\"type\":\"context\",\"elements\":[{\"type\":\"mrkdwn\",\"text\":\"*Detail Explaination:*\"},{\"type\":\"mrkdwn\",\"text\":\"* Each character can only be used once unless there are multiple characters in the list.\\n* The longer words are worth more points\\n* A valid word is at least 3 characters long\"}]},{\"type\":\"divider\"},{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*Other Commands*\\n@homerbot gamehelp\\n@homerbot gamescore - shows score for today's game\\n@homerbot gameleaderboards - show the all time leaders in points\"}}]}", currentGameLetters);
         sendMessage(channelId, json);
     }
     

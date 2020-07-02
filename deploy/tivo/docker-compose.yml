@@ -17,6 +17,7 @@ services:
       - homerbot-network
     tty: true
     environment:
+      NERDBOT_WORDGAME_BASEPATH: http://teamnerds.xyz:10040/v0/
       SLACK_BOT_SIGNING_SECRET: ${TIVO_SLACK_BOT_SIGNING_SECRET}
       SLACK_BOT_CLIENT_ID: ${TIVO_SLACK_BOT_CLIENT_ID}
       SLACK_BOT_TOKEN: ${TIVO_SLACK_BOT_TOKEN}

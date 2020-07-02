@@ -17,6 +17,7 @@ services:
       - chipadvisor-network
     tty: true
     environment:
+      NERDBOT_WORDGAME_BASEPATH: http://teamnerds.xyz:10041/v0/
       SLACK_BOT_SIGNING_SECRET: ${CHIPADVISOR_SLACK_BOT_SIGNING_SECRET}
       SLACK_BOT_CLIENT_ID: ${CHIPADVISOR_SLACK_BOT_CLIENT_ID}
       SLACK_BOT_TOKEN: ${CHIPADVISOR_SLACK_BOT_TOKEN}

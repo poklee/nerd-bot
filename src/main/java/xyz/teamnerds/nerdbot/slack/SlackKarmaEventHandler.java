@@ -2,7 +2,9 @@ package xyz.teamnerds.nerdbot.slack;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -111,20 +113,23 @@ public class SlackKarmaEventHandler implements SlackWebhookEventHandler
         String channel = messageEvent.getChannel();
         if (text != null && user != null && channel != null)
         {
-            String textLowerCase = text.toLowerCase();
-            if (textLowerCase.contains("ranking") || textLowerCase.contains("leaderboard"))
+            Set<String> words = SlackWebhookEventHandler.parseWordsFromText(text).stream()
+                    .map(str -> str.toLowerCase())
+                    .collect(Collectors.toSet());
+            
+            if (words.contains("ranking") || words.contains("leaderboard"))
             {
                 KarmaReadRankingAction action = KarmaReadRankingAction.builder().channelId(channel).build();
 
                 nerdBotActionHandler.handleKarmaReadRankingAction(action);
             }
-            else if (text.toLowerCase().contains("karma"))
+            else if (words.contains("karma"))
             {
                 KarmaReadAction action = KarmaReadAction.builder().userId(user).channelId(channel).build();
 
                 nerdBotActionHandler.handleKarmaReadAction(action);
             }
-            else if (text.toLowerCase().contains("help"))
+            else if (words.contains("help"))
             {
                 KarmaHelpAction action = KarmaHelpAction.builder().userId(user).channelId(channel).build();
 
