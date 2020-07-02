@@ -13,24 +13,24 @@ import com.google.common.base.Preconditions;
 import com.slack.api.Slack;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 
-import xyz.teamnerds.nerdbot.api.HelpAction;
+import xyz.teamnerds.nerdbot.api.KarmaHelpAction;
 import xyz.teamnerds.nerdbot.api.KarmaReadAction;
 import xyz.teamnerds.nerdbot.api.KarmaReadRankingAction;
 import xyz.teamnerds.nerdbot.api.KarmaUpdateAction;
-import xyz.teamnerds.nerdbot.api.NerdBotActionHandler;
+import xyz.teamnerds.nerdbot.api.KarmaActionHandler;
 import xyz.teamnerds.nerdbot.dao.KarmaDatastore;
 
 @Component
-public class SlackNerdBotActionHandler implements NerdBotActionHandler
+public class SlackKarmaActionHandler implements KarmaActionHandler
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SlackNerdBotActionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SlackKarmaActionHandler.class);
 
     @Autowired
     private KarmaDatastore karmaDatastore;
 
     @Override
-    public void handleHelpAction(HelpAction action)
+    public void handleHelpAction(KarmaHelpAction action)
     {
         LOGGER.info("handleHelpAction " + action);
 
@@ -107,7 +107,6 @@ public class SlackNerdBotActionHandler implements NerdBotActionHandler
         String token = new SlackConfiguration().getToken();
         try
         {
-
             ChatPostMessageResponse response = slack.methods(token)
                     .chatPostMessage(req -> req.channel(channel).text(text));
             LOGGER.info("ChatPostMessageResponse = " + response);
@@ -124,6 +123,7 @@ public class SlackNerdBotActionHandler implements NerdBotActionHandler
 
     private void sendMessageWithJson(String channel, String json)
     {
+        if (1==1)return;
         Slack slack = Slack.getInstance();
         String token = new SlackConfiguration().getToken();
         try

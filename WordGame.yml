@@ -1,0 +1,144 @@
+swagger: "2.0"
+info:
+  description: "Word scramble game API"
+  version: "1.0.0"
+  title: "Word Game"
+  contact:
+    email: "plee@teamnerds.xyz"
+host: "localhost"
+basePath: "/v0"
+schemes:
+- "http"
+
+paths:
+  "/game/daily":
+    get:
+      tags:
+          - game
+      summary: "Get the daily game information"
+      operationId: "getDailyGameInfo"
+      responses:
+        "200":
+          description: "Ok"
+          schema:
+            $ref: "#/definitions/GameInfo"
+  "/game/{gameId}/submitAnswer":
+    post:
+      tags:
+        - game
+      summary: "submit"
+      operationId: "submitAnswer"
+      parameters:
+        - in: path
+          name: "gameId"
+          required: true
+          type: "string"
+        - in: body
+          name: "submitAnswerRequest"
+          schema: 
+            $ref: "#/definitions/SubmitAnswerRequest"
+      responses:
+        "200":
+          description: "Ok"
+          schema:
+            $ref: "#/definitions/SubmitAnswerResponse"
+  "/game/{gameId}/leaderboards":
+    get:
+      tags:
+        - game
+      summary: "Get the game leaderboard information"
+      operationId: "getLeaderboardInfo"
+      parameters:
+        - in: path
+          name: "gameId"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Ok"
+          schema:
+            $ref: "#/definitions/GameScoreInfo"
+  "/user/{externalUserId}/score":
+    get:
+      tags:
+        - game
+      summary: "Get the user's score"
+      operationId: "getUserScore"
+      parameters:
+        - in: path
+          name: "externalUserId"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Ok"
+          schema:
+            $ref: "#/definitions/UserScoreInfo"
+  "/user/":
+    get:
+      tags: 
+        - game
+      summary: "Get the user leaderboards"
+      operationId: "getUserLeaderboards"
+      responses:
+        "200":
+          description: "Ok"
+          schema:
+            $ref: "#/definitions/UserLeaderboardInfo"
+definitions:
+  GameInfo:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      description:
+        type: "string"
+  SubmitAnswerRequest:
+    type: "object"
+    properties:
+      user:
+        type: "string"
+      answers:
+        type: "array"
+        items: 
+          type: "string"
+  SubmitAnswerResponse:
+    type: "object"
+    properties:
+      acceptedAnswers:
+        type: "array"
+        items:
+          type: "string"
+  UserLeaderboardInfo:
+    type: "object"
+    properties: 
+      topUsers:
+        type: "array"
+        items:
+          $ref: "#/definitions/UserScoreInfo"
+  UserScoreInfo:
+    type: "object"
+    properties: 
+      externalUserId: 
+        type: "string"
+      totalScore:
+        type: "integer"
+  GameAnswerRecord:
+    type: "object"
+    properties:
+      word:
+        type: "string"
+      externalUserId:
+        type: "string"
+      score:
+        type: "integer"
+  GameScoreInfo:
+    type: "object"
+    properties: 
+      gameId:
+        type: "string"
+      answers:
+        type: "array"
+        items:
+          $ref: "#/definitions/GameAnswerRecord"
+        

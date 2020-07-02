@@ -20,6 +20,35 @@
 	</properties>
 
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/io.swagger/swagger-core -->
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-core</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
+		<dependency>
+			<groupId>com.google.api-client</groupId>
+			<artifactId>google-api-client</artifactId>
+			<version>1.30.9</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-common -->
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-common</artifactId>
+			<version>2.31</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.gsonfire</groupId>
+            <artifactId>gson-fire</artifactId>
+            <version>1.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>1.5.18</version>
+        </dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -29,7 +58,6 @@
 			<artifactId>guava</artifactId>
 			<version>29.0-jre</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.slack.api</groupId>
 			<artifactId>slack-api-client</artifactId>
@@ -73,6 +101,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-collections4</artifactId>
+		    <version>4.1</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
@@ -91,6 +125,46 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>io.swagger</groupId>
+				<artifactId>swagger-codegen-maven-plugin</artifactId>
+				<version>2.4.14</version>
+
+				<dependencies>
+					<dependency>
+						<groupId>io.swagger</groupId>
+						<artifactId>swagger-codegen-maven-plugin</artifactId>
+						<version>2.4.14</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<?m2e ignore?>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+
+						<configuration>
+							<!-- can this refer to another maven dependency's resources? -->
+							<inputSpec>${project.basedir}/WordGame.yml</inputSpec>
+							<language>java</language>
+							<library>google-api-client</library>
+							<modelPackage>xyz.teamnerds.wordgame.gen.client.model</modelPackage>
+							<apiPackage>xyz.teamnerds.wordgame.gen.client.api</apiPackage>
+							<invokerPackage>xyz.teamnerds.wordgame.gen.client.handler</invokerPackage>
+							<generateSupportingFiles>true</generateSupportingFiles>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<configOptions>
+								<java8>true</java8>
+								<dateLibrary>java8-instant</dateLibrary>
+								<invokerPackage>xyz.teamnerds.wordgame.gen.client.handler</invokerPackage>
+							</configOptions>
+						</configuration>
+
+
+					</execution>
+				</executions>
+			</plugin>			
 		</plugins>
 	</build>
 

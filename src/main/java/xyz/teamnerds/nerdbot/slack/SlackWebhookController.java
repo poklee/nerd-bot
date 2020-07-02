@@ -1,6 +1,7 @@
 package xyz.teamnerds.nerdbot.slack;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -31,7 +32,7 @@ public class SlackWebhookController
     private SlackConfiguration slackConfiguration = new SlackConfiguration();
 
     @Autowired
-    private SlackWebhookEventHandler slackWebhookEventHandler;
+    private List<SlackWebhookEventHandler> slackWebhookEventHandlers;
 
     @Value("${nerdbot.slack.validate-signature:true}")
     private boolean validateSignature;
@@ -99,7 +100,10 @@ public class SlackWebhookController
 
         try
         {
-            slackWebhookEventHandler.handlePayload(contentBody);
+            for (SlackWebhookEventHandler slackWebhookEventHandler : slackWebhookEventHandlers)
+            {
+                slackWebhookEventHandler.handlePayload(contentBody);
+            }
         }
         catch (Exception ex)
         {
