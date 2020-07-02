@@ -26,30 +26,30 @@ import com.slack.api.model.event.AppMentionEvent;
 import com.slack.api.model.event.MessageEvent;
 import com.slack.api.util.json.GsonFactory;
 
-import xyz.teamnerds.nerdbot.api.HelpAction;
+import xyz.teamnerds.nerdbot.api.KarmaHelpAction;
 import xyz.teamnerds.nerdbot.api.KarmaReadAction;
 import xyz.teamnerds.nerdbot.api.KarmaReadRankingAction;
 import xyz.teamnerds.nerdbot.api.KarmaUpdateAction;
 import xyz.teamnerds.nerdbot.api.NerdBotAction;
-import xyz.teamnerds.nerdbot.api.NerdBotActionHandler;
+import xyz.teamnerds.nerdbot.api.KarmaActionHandler;
 
 /**
  * Handles slack event payload json. This class is responsible for parsing out
  * slack message formats and converthing them into logical {@link NerdBotAction}
  * events. Then every {@link NerdBotAction} event gets handled by the system
- * {@link NerdBotActionHandler}
+ * {@link KarmaActionHandler}
  * 
  * @author plee
  *
  */
 @Service
-public class SlackWebhookEventHandlerImpl implements SlackWebhookEventHandler
+public class SlackKarmaEventHandler implements SlackWebhookEventHandler
 {
 
-    private Logger LOGGER = LoggerFactory.getLogger(SlackWebhookEventHandlerImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(SlackKarmaEventHandler.class);
 
     @Autowired
-    private NerdBotActionHandler nerdBotActionHandler;
+    private KarmaActionHandler nerdBotActionHandler;
 
     @Autowired
     private TaskExecutor taskExecutor;
@@ -126,7 +126,7 @@ public class SlackWebhookEventHandlerImpl implements SlackWebhookEventHandler
             }
             else if (text.toLowerCase().contains("help"))
             {
-                HelpAction action = HelpAction.builder().userId(user).channelId(channel).build();
+                KarmaHelpAction action = KarmaHelpAction.builder().userId(user).channelId(channel).build();
 
                 nerdBotActionHandler.handleHelpAction(action);
             }
