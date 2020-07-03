@@ -9,6 +9,8 @@ public interface WordGameActionHandler
     
     public void handleSubmitAnswerAction(@Nonnull WordGameSubmitAnswerAction action);
     
-    public void handleShowLeaderboardsAction(@Nonnull WordGameShowLeaderboardsAction action);
+    public void handleShowGameScoreAction(@Nonnull WordGameShowGameScoreAction action);
+    
+    public void handleShowUserScoreAction(@Nonnull WordGameShowUserScoreAction action);
     
 }

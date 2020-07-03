@@ -1,7 +1,5 @@
 package xyz.teamnerds.nerdbot.api;
 
-import java.util.List;
-
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,10 +9,10 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class WordGameSubmitAnswerAction implements NerdBotAction
+public class WordGameShowUserScoreAction implements NerdBotAction
 {
-
+    
     private String userId;
     private String channelId;
-    private List<String> words;
+
 }

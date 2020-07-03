@@ -13,11 +13,11 @@ import com.google.common.base.Preconditions;
 import com.slack.api.Slack;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 
+import xyz.teamnerds.nerdbot.api.KarmaActionHandler;
 import xyz.teamnerds.nerdbot.api.KarmaHelpAction;
 import xyz.teamnerds.nerdbot.api.KarmaReadAction;
 import xyz.teamnerds.nerdbot.api.KarmaReadRankingAction;
 import xyz.teamnerds.nerdbot.api.KarmaUpdateAction;
-import xyz.teamnerds.nerdbot.api.KarmaActionHandler;
 import xyz.teamnerds.nerdbot.dao.KarmaDatastore;
 
 @Component

@@ -28,12 +28,12 @@ import com.slack.api.model.event.AppMentionEvent;
 import com.slack.api.model.event.MessageEvent;
 import com.slack.api.util.json.GsonFactory;
 
+import xyz.teamnerds.nerdbot.api.KarmaActionHandler;
 import xyz.teamnerds.nerdbot.api.KarmaHelpAction;
 import xyz.teamnerds.nerdbot.api.KarmaReadAction;
 import xyz.teamnerds.nerdbot.api.KarmaReadRankingAction;
 import xyz.teamnerds.nerdbot.api.KarmaUpdateAction;
 import xyz.teamnerds.nerdbot.api.NerdBotAction;
-import xyz.teamnerds.nerdbot.api.KarmaActionHandler;
 
 /**
  * Handles slack event payload json. This class is responsible for parsing out

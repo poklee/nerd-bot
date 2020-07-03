@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class WordGameShowLeaderboardsAction implements NerdBotAction
+public class WordGameShowGameScoreAction implements NerdBotAction
 {
 
     private String userId;

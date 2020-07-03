@@ -1,15 +1,10 @@
 package xyz.teamnerds.nerdbot.slack;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import org.slf4j.Logger;
@@ -24,17 +19,14 @@ import com.slack.api.app_backend.events.EventTypeExtractorImpl;
 import com.slack.api.app_backend.events.payload.AppMentionPayload;
 import com.slack.api.app_backend.events.payload.MessagePayload;
 import com.slack.api.model.block.LayoutBlock;
-import com.slack.api.model.block.RichTextBlock;
-import com.slack.api.model.block.element.BlockElement;
-import com.slack.api.model.block.element.RichTextElement;
-import com.slack.api.model.block.element.RichTextSectionElement;
 import com.slack.api.model.event.AppMentionEvent;
 import com.slack.api.model.event.MessageEvent;
 import com.slack.api.util.json.GsonFactory;
 
 import xyz.teamnerds.nerdbot.api.WordGameActionHandler;
 import xyz.teamnerds.nerdbot.api.WordGameHelpAction;
-import xyz.teamnerds.nerdbot.api.WordGameShowLeaderboardsAction;
+import xyz.teamnerds.nerdbot.api.WordGameShowGameScoreAction;
+import xyz.teamnerds.nerdbot.api.WordGameShowUserScoreAction;
 import xyz.teamnerds.nerdbot.api.WordGameSubmitAnswerAction;
 
 @Service
@@ -48,10 +40,6 @@ public class SlackWordGameEventHandler implements SlackWebhookEventHandler
     
     @Autowired
     private WordGameActionHandler wordGameActionHandler;
-    
-    
-    
-    
     
     @Override
     public void handlePayload(String contentBody)
@@ -129,6 +117,7 @@ public class SlackWordGameEventHandler implements SlackWebhookEventHandler
             WordGameSubmitAnswerAction action = WordGameSubmitAnswerAction.builder()
                     .userId(userId)
                     .words(uniqueWords)
+                    .channelId(messageEvent.getChannel())
                     .build();
             
             wordGameActionHandler.handleSubmitAnswerAction(action);
@@ -171,15 +160,22 @@ public class SlackWordGameEventHandler implements SlackWebhookEventHandler
         }
         else if (words.contains("gamescore"))
         {
-            WordGameShowLeaderboardsAction action = WordGameShowLeaderboardsAction.builder()
+            WordGameShowGameScoreAction action = WordGameShowGameScoreAction.builder()
                     .userId(userId)
                     .channelId(channelId)
                     .build();
             
-            wordGameActionHandler.handleShowLeaderboardsAction(action);
+            wordGameActionHandler.handleShowGameScoreAction(action);
         }
-        
-        
+        else if (words.contains("userscore"))
+        {
+            WordGameShowUserScoreAction action = WordGameShowUserScoreAction.builder()
+                    .userId(userId)
+                    .channelId(channelId)
+                    .build();
+            
+            wordGameActionHandler.handleShowUserScoreAction(action);
+        }
     }
     
     
