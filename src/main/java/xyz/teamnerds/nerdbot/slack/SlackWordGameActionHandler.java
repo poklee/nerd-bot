@@ -116,7 +116,7 @@ public class SlackWordGameActionHandler implements WordGameActionHandler
                 LOGGER.info("Got " + acceptedAnswers.size() + " words.  List=" + acceptedAnswersString);
                 
                 StringBuilder sb = new StringBuilder();
-                sb.append(String.format("Congrats <@%s>, you said the hidden words of the day!  Say `@homerbot gamehelp` for more info.  Words=%s", acceptedAnswersString));
+                sb.append(String.format("Congrats <@%s>, you said the hidden words of the day!  Say `@homerbot gamehelp` for more info.  Words=%s", userId, acceptedAnswersString));
                 sendMessage(action.getChannelId(), sb.toString());
             }
             
@@ -151,8 +151,9 @@ public class SlackWordGameActionHandler implements WordGameActionHandler
             LOGGER.warn("Failed to connect to Word Game API", ex);
         }
         
-        if (gameAnswerRecords == null)
+        if (gameAnswerRecords == null || gameAnswerRecords.isEmpty())
         {
+            sendMessage(action.getChannelId(), "No hidden words found today, keep looking, the letters are *" + gameId + "*");
             return;
         }
         
